@@ -43,14 +43,6 @@ App.propTypes = {
           id: PropTypes.string.isRequired,
         })
       ).isRequired,
-      savedData: PropTypes.arrayOf(
-        PropTypes.arrayOf(
-          PropTypes.shape({
-            label: PropTypes.string,
-            value: PropTypes.string,
-          })
-        )
-      ).isRequired,
     }).isRequired
   ).isRequired,
 };

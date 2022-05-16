@@ -36,16 +36,16 @@ class Input extends Component {
 
 Input.propTypes = {
   labelText: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   type: PropTypes.string.isRequired,
   required: PropTypes.bool.isRequired,
   value: PropTypes.string,
   id: PropTypes.string.isRequired,
   handleInputChange: PropTypes.func.isRequired,
 };
-
 Input.defaultProps = {
   value: '',
+  placeholder: 'Enter new value',
 };
 
 export default Input;

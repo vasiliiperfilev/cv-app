@@ -2,24 +2,55 @@
 import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import Fieldset from './Fieldset';
+import UserDataDiv from './UserDataDiv';
 
 class Form extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSaved: {},
+      dataSaved: {
+        Personal: {
+          personalInfo: {
+            Name: {
+              value: 'Name',
+              edit: false,
+            },
+            Email: {
+              value: 'Email',
+              edit: false,
+            },
+          },
+        },
+      },
     };
     this.saveData = this.saveData.bind(this);
+    this.deleteData = this.deleteData.bind(this);
   }
 
-  saveData(legend, data) {
+  handleDelete(event) {
+    this.deleteData('Personal', event.target.parentNode.id);
+  }
+
+  deleteData(fieldset, id) {
     this.setState((prevState) => {
-      const dataAdded = prevState.dataSaved[legend]
-        ? [...prevState.dataSaved[legend], data]
-        : [data];
       const newDataSaved = {
         ...prevState.dataSaved,
-        [legend]: dataAdded,
+      };
+      delete newDataSaved[fieldset][id];
+      return {
+        dataSaved: newDataSaved,
+      };
+    });
+  }
+
+  saveData(legend, data, id) {
+    this.setState((prevState) => {
+      const dataWithNewSave = prevState.dataSaved[legend]
+        ? { ...prevState.dataSaved[legend], [id]: data }
+        : { [id]: data };
+      const newDataSaved = {
+        ...prevState.dataSaved,
+        [legend]: dataWithNewSave,
       };
       return {
         dataSaved: newDataSaved,
@@ -27,18 +58,31 @@ class Form extends Component {
     });
   }
 
+  // remove handleDelete, move save data process to App level and UserDataDiv too
+  // remove multi prop cause Personal is separate
+  // remove Personal from fieldsets
   render() {
     const { fieldsets } = this.props;
     const { dataSaved } = this.state;
     return (
       <form>
-        {fieldsets.map((fieldsetProps) => (
+        <UserDataDiv
+          id="Personal"
+          data={dataSaved.Personal.personalInfo}
+          handleDelete={this.handleDelete}
+          type="text"
+          changeValues={this.saveData}
+          legend="Personal"
+        />
+        {fieldsets.slice(1).map((fieldsetProps) => (
           <Fieldset
             legend={fieldsetProps.legend}
             inputs={fieldsetProps.inputs}
             dataSaved={dataSaved[fieldsetProps.legend]}
             saveData={this.saveData}
+            deleteData={this.deleteData}
             key={fieldsetProps.legend}
+            multi={fieldsetProps.multi}
           />
         ))}
       </form>
@@ -58,14 +102,7 @@ Form.propTypes = {
           id: PropTypes.string.isRequired,
         })
       ).isRequired,
-      // savedData: PropTypes.arrayOf(
-      //   PropTypes.arrayOf(
-      //     PropTypes.shape({
-      //       label: PropTypes.string,
-      //       value: PropTypes.string,
-      //     })
-      //   )
-      // ).isRequired,
+      multi: PropTypes.bool,
     })
   ).isRequired,
 };

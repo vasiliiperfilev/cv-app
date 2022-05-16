@@ -40,7 +40,7 @@ const data = {
           id: uniqid(),
         },
       ],
-      savedData: [],
+      multi: false,
     },
     {
       legend: 'Education',
@@ -49,14 +49,14 @@ const data = {
           component: Input,
           labelText: 'University',
           type: 'text',
-          required: false,
+          required: true,
           id: uniqid(),
         },
         {
           component: Input,
           labelText: 'Major',
           type: 'text',
-          required: false,
+          required: true,
           id: uniqid(),
         },
         {
@@ -74,26 +74,6 @@ const data = {
           id: uniqid(),
         },
       ],
-      savedData: [
-        [
-          {
-            label: 'University',
-            value: 'Some University',
-          },
-          {
-            label: 'Major',
-            value: 'Some major>',
-          },
-          {
-            label: 'Start date',
-            value: 'Some date',
-          },
-          {
-            label: 'End date',
-            value: 'Some date',
-          },
-        ],
-      ],
     },
     {
       legend: 'Experience',
@@ -102,14 +82,14 @@ const data = {
           component: Input,
           labelText: 'Company',
           type: 'text',
-          required: false,
+          required: true,
           id: uniqid(),
         },
         {
           component: Input,
           labelText: 'Position',
           type: 'text',
-          required: false,
+          required: true,
           id: uniqid(),
         },
         {
@@ -134,7 +114,6 @@ const data = {
           id: uniqid(),
         },
       ],
-      savedData: [],
     },
   ],
 };
