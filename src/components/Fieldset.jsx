@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import uniqid from 'uniqid';
 import UserDataDiv from './UserDataDiv';
-import EditablePara from './EditablePara';
 
 class Fieldset extends Component {
   constructor(props) {
@@ -12,26 +11,35 @@ class Fieldset extends Component {
       values: this.createEmptyValues(),
     };
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.changeEditableState = this.changeEditableState.bind(this);
+    this.handleAdd = this.handleAdd.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.clearInputs = this.clearInputs.bind(this);
   }
 
   handleDelete(event) {
     const { deleteData, legend } = this.props;
-    deleteData(legend, event.target.parentNode.id);
+    deleteData(legend, event.target.parentNode.children[0].id);
   }
 
-  handleSubmit() {
+  handleAdd() {
     if (this.isValid()) {
-      const { saveData, legend } = this.props;
+      const { saveData, legend, inputs } = this.props;
       const { values } = this.state;
-      const data = Object.values(values).reduce((obj, currentInput) => {
-        // eslint-disable-next-line no-param-reassign
-        if (currentInput.value) obj[currentInput.label] = { ...currentInput };
-        return obj;
-      }, {});
+      const data = Object.entries(values).reduce(
+        (obj, [currentId, currentInput]) => {
+          if (currentInput.value)
+            // eslint-disable-next-line no-param-reassign
+            obj[currentInput.label] = {
+              ...currentInput,
+              edit: false,
+              type: inputs.find((input) => input.id === currentId).type,
+            };
+          return obj;
+        },
+        {}
+      );
       saveData(legend, data, uniqid());
+      this.clearInputs();
     }
   }
 
@@ -42,25 +50,14 @@ class Fieldset extends Component {
         [event.target.id]: {
           label: event.target.parentNode.innerText,
           value: event.target.value,
-          edit: prevState.values[event.target.id].edit,
         },
       },
     }));
   }
 
-  changeEditableState(id) {
-    this.setState((prevState) => {
-      const { label, value, edit } = prevState.values[id];
-      return {
-        values: {
-          ...prevState.values,
-          [id]: {
-            label,
-            value,
-            edit: !edit,
-          },
-        },
-      };
+  clearInputs() {
+    this.setState({
+      values: this.createEmptyValues(),
     });
   }
 
@@ -71,7 +68,6 @@ class Fieldset extends Component {
       obj[input.id] = {
         value: '',
         label: '',
-        edit: false,
       };
       return obj;
     }, {});
@@ -85,28 +81,25 @@ class Fieldset extends Component {
   }
 
   render() {
-    const { legend, inputs, dataSaved, multi, saveData } = this.props;
+    const { legend, inputs, dataSaved, saveData } = this.props;
     const { values } = this.state;
     let dataDisplay;
     if (dataSaved)
       // need to pass type as array or smthing
       dataDisplay = Object.entries(dataSaved).map(([id, data]) => (
-        <UserDataDiv
-          id={id}
-          data={data}
-          key={id}
-          handleDelete={this.handleDelete}
-          type={inputs.find((element) => element.label === data.label).type}
-          changeValues={saveData}
-          legend={legend}
-        />
+        <div key={id}>
+          <UserDataDiv
+            id={id}
+            data={data}
+            type={inputs.find((element) => element.label === data.label).type}
+            changeValues={saveData}
+            legend={legend}
+          />
+          <button type="button" onClick={this.handleDelete}>
+            Delete
+          </button>
+        </div>
       ));
-    // Change Personal to UserDataDiv that is rendered as a separate component
-    // Delete as part of fieldset only
-    // remove edit from create empty values, add only when saved
-    // remove Personal props from InputComponent
-    // rename Submit for Add
-    // remove edit from handleChange
     return (
       <fieldset>
         <legend>{legend}</legend>
@@ -123,18 +116,12 @@ class Fieldset extends Component {
               id={inputProps.id}
               value={values[inputProps.id].value}
               handleInputChange={this.handleInputChange}
-              edit={
-                InputComponent === EditablePara && values[inputProps.id].edit
-              }
-              changeEdit={this.changeEditableState}
             />
           );
         })}
-        {multi && (
-          <button type="button" onClick={this.handleSubmit}>
-            Add
-          </button>
-        )}
+        <button type="button" onClick={this.handleAdd}>
+          Add
+        </button>
       </fieldset>
     );
   }
@@ -150,23 +137,22 @@ Fieldset.propTypes = {
       id: PropTypes.string.isRequired,
     })
   ).isRequired,
-  multi: PropTypes.bool,
   saveData: PropTypes.func.isRequired,
   deleteData: PropTypes.func.isRequired,
   dataSaved: PropTypes.shape({
     id: PropTypes.string,
     data: PropTypes.shape({
       label: PropTypes.shape({
-        label: PropTypes.string,
-        value: PropTypes.string,
-        edit: PropTypes.string,
+        label: PropTypes.string.isRequired,
+        value: PropTypes.string.isRequired,
+        edit: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
       }),
     }),
   }),
 };
 Fieldset.defaultProps = {
   dataSaved: {},
-  multi: true,
 };
 
 export default Fieldset;

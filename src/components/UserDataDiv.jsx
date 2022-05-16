@@ -29,10 +29,10 @@ class UserDataDiv extends Component {
   }
 
   render() {
-    const { data, id, handleDelete, type } = this.props;
+    const { data, id } = this.props;
     return (
       <div id={id}>
-        {Object.entries(data).map(([label, { value, edit }]) => (
+        {Object.entries(data).map(([label, { value, edit, type }]) => (
           <EditablePara
             value={value}
             id={id + label}
@@ -45,9 +45,6 @@ class UserDataDiv extends Component {
             labelText={label}
           />
         ))}
-        <button type="button" onClick={handleDelete}>
-          Delete
-        </button>
       </div>
     );
   }
@@ -62,9 +59,7 @@ UserDataDiv.propTypes = {
       edit: PropTypes.string,
     }),
   }).isRequired,
-  handleDelete: PropTypes.func.isRequired,
   changeValues: PropTypes.func.isRequired,
-  type: PropTypes.string.isRequired,
   legend: PropTypes.string.isRequired,
 };
 

@@ -4,44 +4,9 @@ import uniqid from 'uniqid';
 import App from './App';
 import TextArea from './components/TextArea';
 import Input from './components/Input';
-import EditablePara from './components/EditablePara';
 
 const data = {
   fieldsets: [
-    {
-      legend: 'Personal',
-      inputs: [
-        {
-          component: EditablePara,
-          labelText: 'Name',
-          type: 'text',
-          required: true,
-          id: uniqid(),
-        },
-        {
-          component: EditablePara,
-          labelText: 'Phone',
-          type: 'tel',
-          required: true,
-          id: uniqid(),
-        },
-        {
-          component: EditablePara,
-          labelText: 'Email',
-          type: 'email',
-          required: true,
-          id: uniqid(),
-        },
-        {
-          component: EditablePara,
-          labelText: 'LinkedIn',
-          type: 'url',
-          required: false,
-          id: uniqid(),
-        },
-      ],
-      multi: false,
-    },
     {
       legend: 'Education',
       inputs: [
