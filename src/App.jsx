@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import Form from './components/Form';
 import UserDataDiv from './components/UserDataDiv';
+import CvPreview from './components/CvPreview';
+import './styles/app.css';
 
 class App extends Component {
   constructor(props) {
@@ -13,14 +15,42 @@ class App extends Component {
         Personal: {
           main: {
             Name: {
-              value: 'Name',
+              value: 'Enter name',
               edit: false,
               type: 'text',
+              label: 'Name',
+            },
+            Currentposition: {
+              value: 'Enter current position',
+              edit: false,
+              type: 'text',
+              label: 'Current position',
+            },
+            Phone: {
+              value: 'Enter your phone',
+              edit: false,
+              type: 'tel',
+              label: 'Phone',
+            },
+          },
+          secondary: {
+            Address: {
+              value: 'Enter address',
+              edit: false,
+              type: 'text',
+              label: 'Address',
             },
             Email: {
-              value: 'Email',
+              value: 'Enter email',
               edit: false,
               type: 'email',
+              label: 'Email',
+            },
+            LinkedIn: {
+              value: 'Enter LinkedIn link',
+              edit: false,
+              type: 'url',
+              label: 'LinkedIn',
             },
           },
         },
@@ -28,6 +58,7 @@ class App extends Component {
     };
     this.saveData = this.saveData.bind(this);
     this.deleteData = this.deleteData.bind(this);
+    this.switchMode = this.switchMode.bind(this);
   }
 
   deleteData(fieldset, id) {
@@ -57,20 +88,32 @@ class App extends Component {
     });
   }
 
+  switchMode() {
+    this.setState((prevState) => ({
+      isWorkMode: !prevState.isWorkMode,
+    }));
+  }
+
   render() {
     const { fieldsets } = this.props;
     const { isWorkMode, dataSaved } = this.state;
     let output;
     if (isWorkMode) {
       output = (
-        <div>
-          <UserDataDiv
-            id="main"
-            data={dataSaved.Personal.main}
-            type="text"
-            changeValues={this.saveData}
-            legend="Personal"
-          />
+        <div className="inputs">
+          <div className="Personal">
+            {Object.entries(dataSaved.Personal).map(
+              ([categoryName, fields]) => (
+                <UserDataDiv
+                  id={categoryName}
+                  key={categoryName}
+                  data={fields}
+                  changeValues={this.saveData}
+                  legend="Personal"
+                />
+              )
+            )}
+          </div>
           <Form
             fieldsets={fieldsets}
             saveData={this.saveData}
@@ -80,12 +123,21 @@ class App extends Component {
         </div>
       );
     } else {
-      output = '';
+      output = (
+        <CvPreview
+          personal={dataSaved.Personal}
+          education={dataSaved.Education}
+          experience={dataSaved.Experience}
+        />
+      );
     }
     return (
       <div className="App">
-        <button type="button">Working mode</button>
-        <button type="button">Preview mode</button>
+        <div className="controls">
+          <button type="button" onClick={this.switchMode}>
+            Working mode | Preview mode
+          </button>
+        </div>
         {output}
       </div>
     );

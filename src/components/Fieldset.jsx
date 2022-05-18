@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
 import uniqid from 'uniqid';
 import UserDataDiv from './UserDataDiv';
+import '../styles/fieldset.css';
 
 class Fieldset extends Component {
   constructor(props) {
@@ -29,7 +30,7 @@ class Fieldset extends Component {
         (obj, [currentId, currentInput]) => {
           if (currentInput.value)
             // eslint-disable-next-line no-param-reassign
-            obj[currentInput.label] = {
+            obj[currentInput.label.split(' ').join('')] = {
               ...currentInput,
               edit: false,
               type: inputs.find((input) => input.id === currentId).type,
@@ -85,9 +86,8 @@ class Fieldset extends Component {
     const { values } = this.state;
     let dataDisplay;
     if (dataSaved)
-      // need to pass type as array or smthing
       dataDisplay = Object.entries(dataSaved).map(([id, data]) => (
-        <div key={id}>
+        <div key={id} className="saved-data">
           <UserDataDiv
             id={id}
             data={data}
@@ -95,14 +95,15 @@ class Fieldset extends Component {
             changeValues={saveData}
             legend={legend}
           />
-          <button type="button" onClick={this.handleDelete}>
+          <button type="button" onClick={this.handleDelete} className="btn dlt">
             Delete
           </button>
         </div>
       ));
     return (
-      <fieldset>
+      <fieldset className={legend}>
         <legend>{legend}</legend>
+        <p>Click to edit</p>
         {dataSaved && dataDisplay}
         {inputs.map((inputProps) => {
           const InputComponent = inputProps.component;
@@ -119,7 +120,7 @@ class Fieldset extends Component {
             />
           );
         })}
-        <button type="button" onClick={this.handleAdd}>
+        <button type="button" onClick={this.handleAdd} className="btn add">
           Add
         </button>
       </fieldset>

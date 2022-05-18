@@ -48,6 +48,7 @@ class EditablePara extends Component {
     }
     return (
       <p id={id} onClick={this.handeClick}>
+        <span>{labelText}:</span>
         {value || placeholder}
       </p>
     );

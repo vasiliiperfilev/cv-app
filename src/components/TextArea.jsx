@@ -12,7 +12,7 @@ class TextArea extends Component {
       this.props;
     return (
       // eslint-disable-next-line jsx-a11y/label-has-associated-control
-      <label>
+      <label className="textarea">
         {labelText}
         <textarea
           placeholder={placeholder}

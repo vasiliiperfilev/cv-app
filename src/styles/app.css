@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: gray;
+  gap: 30px;
+  padding: 30px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.controls>button {
+  padding: 5px;
+}
+
+.Personal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.inputs {
+  width: 70%;
+  background-color: whitesmoke;
+  border: 5px solid lightgray;
+  padding: 20px;
+}
+
+#main,
+#secondary,
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+#main {
+  width: 50%;
+}
+
+#secondary {
+  margin-left: auto;
+}
+
+#main>p,
+#secondary>p {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+#main>p>span,
+#secondary>p>span {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+form {
+  gap: 20px
+}

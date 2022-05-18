@@ -11,31 +11,40 @@ class UserDataDiv extends Component {
   }
 
   handleInputChange(event) {
-    const { value } = event.target;
-    const paraId = event.target.id;
-    const { changeValues, legend, data, id } = this.props;
-    const newData = { ...data };
-    const paraLabel = paraId.slice(id.length, paraId.length);
-    newData[paraLabel].value = value;
+    const { changeValues, legend, newData, id, paraLabel } = this.getVariables(
+      event.target.id
+    );
+    newData[paraLabel].value = event.target.value;
     changeValues(legend, newData, id);
   }
 
-  changeEdit(paraId) {
+  getVariables(paraId) {
     const { changeValues, legend, data, id } = this.props;
-    const newData = { ...data };
+    const newData = JSON.parse(JSON.stringify(data));
     const paraLabel = paraId.slice(id.length, paraId.length);
+    return { changeValues, legend, newData, id, paraLabel };
+  }
+
+  changeEdit(paraId) {
+    const { changeValues, legend, newData, id, paraLabel } =
+      this.getVariables(paraId);
     newData[paraLabel].edit = !newData[paraLabel].edit;
-    changeValues(legend, newData, id);
+    const para = document.querySelector(`#${paraId}`);
+    if (para.tagName === 'P' || para.checkValidity()) {
+      changeValues(legend, newData, id);
+    } else {
+      para.reportValidity();
+    }
   }
 
   render() {
     const { data, id } = this.props;
     return (
       <div id={id}>
-        {Object.entries(data).map(([label, { value, edit, type }]) => (
+        {Object.entries(data).map(([paraId, { value, edit, type, label }]) => (
           <EditablePara
             value={value}
-            id={id + label}
+            id={id + paraId}
             key={label}
             edit={edit}
             type={type}
