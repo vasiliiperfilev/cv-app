@@ -1,6 +1,7 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { PropTypes } from 'prop-types';
+import '../styles/cvpreview.css';
 
 class CvPreview extends Component {
   render() {
@@ -8,37 +9,41 @@ class CvPreview extends Component {
     return (
       <div className="preview">
         <div className="personal">
+          <h3>Personal</h3>
           <div className="left">
-            {Object.entries(personal.main).map(([label, data]) => (
-              <p className={label} key={label}>
-                {data.value}
+            {Object.entries(personal.main).map(([id, data]) => (
+              <p className={id} key={id}>
+                {data.label}: {data.value}
               </p>
             ))}
           </div>
           <div className="right">
             {Object.entries(personal.secondary).map(([label, data]) => (
               <p className={label} key={label}>
-                {data.value}
+                {data.label}: {data.value}
               </p>
             ))}
           </div>
         </div>
         <div className="education">
+          <h3>Education</h3>
           {Object.entries(education).map(([id, dataSet]) => (
             <div key={id}>
               {Object.entries(dataSet).map(([label, data]) => (
                 <p className={label} key={label}>
-                  {data.value}
+                  {data.label}: {data.value}
                 </p>
               ))}
             </div>
           ))}
         </div>
         <div className="experience">
+          <h3>Experience</h3>
           {Object.entries(experience).map(([id, dataSet]) => (
             <div key={id}>
               {Object.entries(dataSet).map(([label, data]) => (
                 <p className={label} key={label}>
+                  <span>{data.label}: </span>
                   {data.value}
                 </p>
               ))}
