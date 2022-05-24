@@ -1,26 +1,24 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 import Fieldset from './Fieldset';
 
-class Form extends Component {
-  render() {
-    const { fieldsets, saveData, deleteData, dataSaved } = this.props;
-    return (
-      <form>
-        {fieldsets.map((fieldsetProps) => (
-          <Fieldset
-            legend={fieldsetProps.legend}
-            inputs={fieldsetProps.inputs}
-            dataSaved={dataSaved[fieldsetProps.legend]}
-            saveData={saveData}
-            deleteData={deleteData}
-            key={fieldsetProps.legend}
-          />
-        ))}
-      </form>
-    );
-  }
+function Form(props) {
+  const { fieldsets, saveData, deleteData, dataSaved } = props;
+  return (
+    <form>
+      {fieldsets.map((fieldsetProps) => (
+        <Fieldset
+          legend={fieldsetProps.legend}
+          inputs={fieldsetProps.inputs}
+          dataSaved={dataSaved[fieldsetProps.legend]}
+          saveData={saveData}
+          deleteData={deleteData}
+          key={fieldsetProps.legend}
+        />
+      ))}
+    </form>
+  );
 }
 Form.propTypes = {
   fieldsets: PropTypes.arrayOf(

@@ -1,58 +1,48 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 import Input from './Input';
 
-class EditablePara extends Component {
-  constructor(props) {
-    super(props);
-    this.handeClick = this.handeClick.bind(this);
-  }
+function EditablePara(props) {
+  const {
+    value,
+    placeholder,
+    id,
+    edit,
+    type,
+    required,
+    handleInputChange,
+    labelText,
+    changeEdit,
+  } = props;
 
-  handeClick() {
-    const { changeEdit, id } = this.props;
-    changeEdit(id);
-  }
-
-  render() {
-    const {
-      value,
-      placeholder,
-      id,
-      edit,
-      type,
-      required,
-      handleInputChange,
-      labelText,
-    } = this.props;
-    if (edit) {
-      return (
-        <div>
-          <Input
-            type={type}
-            required={required}
-            id={id}
-            key={id}
-            value={value}
-            handleInputChange={handleInputChange}
-            labelText={labelText}
-            edit={edit}
-          />
-          <button type="button" onClick={this.handeClick}>
-            Save
-          </button>
-        </div>
-      );
-    }
+  if (edit) {
     return (
-      <p id={id} onClick={this.handeClick}>
-        <span>{labelText}:</span>
-        {value || placeholder}
-      </p>
+      <div>
+        <Input
+          type={type}
+          required={required}
+          id={id}
+          key={id}
+          value={value}
+          handleInputChange={handleInputChange}
+          labelText={labelText}
+          edit={edit}
+        />
+        <button type="button" onClick={() => changeEdit(id)}>
+          Save
+        </button>
+      </div>
     );
   }
+  return (
+    <p id={id} onClick={() => changeEdit(id)}>
+      <span>{labelText}:</span>
+      {value || placeholder}
+    </p>
+  );
 }
 
 EditablePara.propTypes = {

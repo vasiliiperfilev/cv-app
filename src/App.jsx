@@ -1,105 +1,85 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import Form from './components/Form';
 import UserDataDiv from './components/UserDataDiv';
 import CvPreview from './components/CvPreview';
 import './styles/app.css';
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isWorkMode: true,
-      dataSaved: {
-        Personal: {
-          main: {
-            Name: {
-              value: 'Enter name',
-              edit: false,
-              type: 'text',
-              label: 'Name',
-            },
-            Currentposition: {
-              value: 'Enter current position',
-              edit: false,
-              type: 'text',
-              label: 'Current position',
-            },
-            Phone: {
-              value: 'Enter your phone',
-              edit: false,
-              type: 'tel',
-              label: 'Phone',
-            },
-          },
-          secondary: {
-            Address: {
-              value: 'Enter address',
-              edit: false,
-              type: 'text',
-              label: 'Address',
-            },
-            Email: {
-              value: 'Enter email',
-              edit: false,
-              type: 'email',
-              label: 'Email',
-            },
-            LinkedIn: {
-              value: 'Enter LinkedIn link',
-              edit: false,
-              type: 'url',
-              label: 'LinkedIn',
-            },
-          },
+function App(props) {
+  const { fieldsets } = props;
+  const [isWorkMode, setIsWorkMode] = useState(false);
+  const [dataSaved, setDataSaved] = useState({
+    Personal: {
+      main: {
+        Name: {
+          value: 'Enter name',
+          edit: false,
+          type: 'text',
+          label: 'Name',
+        },
+        Currentposition: {
+          value: 'Enter current position',
+          edit: false,
+          type: 'text',
+          label: 'Current position',
+        },
+        Phone: {
+          value: 'Enter your phone',
+          edit: false,
+          type: 'tel',
+          label: 'Phone',
         },
       },
+      secondary: {
+        Address: {
+          value: 'Enter address',
+          edit: false,
+          type: 'text',
+          label: 'Address',
+        },
+        Email: {
+          value: 'Enter email',
+          edit: false,
+          type: 'email',
+          label: 'Email',
+        },
+        LinkedIn: {
+          value: 'Enter LinkedIn link',
+          edit: false,
+          type: 'url',
+          label: 'LinkedIn',
+        },
+      },
+    },
+  });
+
+  function deleteData(fieldset, id) {
+    const newDataSaved = {
+      ...dataSaved,
     };
-    this.saveData = this.saveData.bind(this);
-    this.deleteData = this.deleteData.bind(this);
-    this.switchMode = this.switchMode.bind(this);
+    delete newDataSaved[fieldset][id];
+    setDataSaved(newDataSaved);
   }
 
-  deleteData(fieldset, id) {
-    this.setState((prevState) => {
-      const newDataSaved = {
-        ...prevState.dataSaved,
-      };
-      delete newDataSaved[fieldset][id];
-      return {
-        dataSaved: newDataSaved,
-      };
-    });
+  function saveData(legend, data, id) {
+    const dataWithNewSave = dataSaved[legend]
+      ? { ...dataSaved[legend], [id]: data }
+      : { [id]: data };
+    const newDataSaved = {
+      ...dataSaved,
+      [legend]: dataWithNewSave,
+    };
+    setDataSaved(newDataSaved);
   }
 
-  saveData(legend, data, id) {
-    this.setState((prevState) => {
-      const dataWithNewSave = prevState.dataSaved[legend]
-        ? { ...prevState.dataSaved[legend], [id]: data }
-        : { [id]: data };
-      const newDataSaved = {
-        ...prevState.dataSaved,
-        [legend]: dataWithNewSave,
-      };
-      return {
-        dataSaved: newDataSaved,
-      };
-    });
+  function switchMode() {
+    setIsWorkMode(!isWorkMode);
   }
 
-  switchMode() {
-    this.setState((prevState) => ({
-      isWorkMode: !prevState.isWorkMode,
-    }));
-  }
-
-  render() {
-    const { fieldsets } = this.props;
-    const { isWorkMode, dataSaved } = this.state;
-    let output;
+  function generateOutput() {
     if (isWorkMode) {
-      output = (
+      return (
         <div className="inputs">
           <div className="Personal">
             {Object.entries(dataSaved.Personal).map(
@@ -108,7 +88,9 @@ class App extends Component {
                   id={categoryName}
                   key={categoryName}
                   data={fields}
-                  changeValues={this.saveData}
+                  changeValues={(legend, data, id) =>
+                    saveData(legend, data, id)
+                  }
                   legend="Personal"
                 />
               )
@@ -116,32 +98,32 @@ class App extends Component {
           </div>
           <Form
             fieldsets={fieldsets}
-            saveData={this.saveData}
-            deleteData={this.deleteData}
+            saveData={(legend, data, id) => saveData(legend, data, id)}
+            deleteData={(fieldset, id) => deleteData(fieldset, id)}
             dataSaved={dataSaved}
           />
         </div>
       );
-    } else {
-      output = (
-        <CvPreview
-          personal={dataSaved.Personal}
-          education={dataSaved.Education}
-          experience={dataSaved.Experience}
-        />
-      );
     }
     return (
-      <div className="App">
-        <div className="controls">
-          <button type="button" onClick={this.switchMode}>
-            Working mode | Preview mode
-          </button>
-        </div>
-        {output}
-      </div>
+      <CvPreview
+        personal={dataSaved.Personal}
+        education={dataSaved.Education}
+        experience={dataSaved.Experience}
+      />
     );
   }
+
+  return (
+    <div className="App">
+      <div className="controls">
+        <button type="button" onClick={() => switchMode()}>
+          Working mode | Preview mode
+        </button>
+      </div>
+      {generateOutput()}
+    </div>
+  );
 }
 
 App.propTypes = {

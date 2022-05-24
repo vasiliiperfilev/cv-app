@@ -1,33 +1,22 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 import EditablePara from './EditablePara';
 
-class UserDataDiv extends Component {
-  constructor(props) {
-    super(props);
-    this.changeEdit = this.changeEdit.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-  }
+function UserDataDiv(props) {
+  const { changeValues, legend, data, id } = props;
+  const getParaLabel = (paraId) => paraId.slice(id.length, paraId.length);
 
-  handleInputChange(event) {
-    const { changeValues, legend, newData, id, paraLabel } = this.getVariables(
-      event.target.id
-    );
+  function handleInputChange(event) {
+    const paraLabel = getParaLabel(event.target.id);
+    const newData = { ...data };
     newData[paraLabel].value = event.target.value;
     changeValues(legend, newData, id);
   }
 
-  getVariables(paraId) {
-    const { changeValues, legend, data, id } = this.props;
-    const newData = JSON.parse(JSON.stringify(data));
-    const paraLabel = paraId.slice(id.length, paraId.length);
-    return { changeValues, legend, newData, id, paraLabel };
-  }
-
-  changeEdit(paraId) {
-    const { changeValues, legend, newData, id, paraLabel } =
-      this.getVariables(paraId);
+  function changeEdit(paraId) {
+    const paraLabel = getParaLabel(paraId);
+    const newData = { ...data };
     newData[paraLabel].edit = !newData[paraLabel].edit;
     const para = document.querySelector(`#${paraId}`);
     if (para.tagName === 'P' || para.checkValidity()) {
@@ -37,26 +26,23 @@ class UserDataDiv extends Component {
     }
   }
 
-  render() {
-    const { data, id } = this.props;
-    return (
-      <div id={id}>
-        {Object.entries(data).map(([paraId, { value, edit, type, label }]) => (
-          <EditablePara
-            value={value}
-            id={id + paraId}
-            key={label}
-            edit={edit}
-            type={type}
-            required
-            handleInputChange={this.handleInputChange}
-            changeEdit={this.changeEdit}
-            labelText={label}
-          />
-        ))}
-      </div>
-    );
-  }
+  return (
+    <div id={id}>
+      {Object.entries(data).map(([dataId, { value, edit, type, label }]) => (
+        <EditablePara
+          value={value}
+          id={id + dataId}
+          key={label}
+          edit={edit}
+          type={type}
+          required
+          handleInputChange={(event) => handleInputChange(event)}
+          changeEdit={(paraId) => changeEdit(paraId)}
+          labelText={label}
+        />
+      ))}
+    </div>
+  );
 }
 
 UserDataDiv.propTypes = {

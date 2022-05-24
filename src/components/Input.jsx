@@ -1,37 +1,31 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React from 'react';
 import { PropTypes } from 'prop-types';
 
-class Input extends Component {
-  // constructor(props) {
-  //   super(props)
-  // }
-
-  render() {
-    const {
-      labelText,
-      placeholder,
-      type,
-      required,
-      value,
-      id,
-      handleInputChange,
-    } = this.props;
-    return (
-      // eslint-disable-next-line jsx-a11y/label-has-associated-control
-      <label className={type}>
-        {labelText}
-        <input
-          type={type}
-          placeholder={placeholder}
-          required={required}
-          id={id}
-          value={value}
-          onChange={handleInputChange}
-        />
-      </label>
-    );
-  }
+function Input(props) {
+  const {
+    labelText,
+    placeholder,
+    type,
+    required,
+    value,
+    id,
+    handleInputChange,
+  } = props;
+  return (
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control
+    <label className={type}>
+      {labelText}
+      <input
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        id={id}
+        value={value}
+        onChange={handleInputChange}
+      />
+    </label>
+  );
 }
 
 Input.propTypes = {

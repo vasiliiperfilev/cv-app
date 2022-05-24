@@ -1,31 +1,37 @@
 /* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
 import uniqid from 'uniqid';
 import UserDataDiv from './UserDataDiv';
 import '../styles/fieldset.css';
 
-class Fieldset extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      values: this.createEmptyValues(),
-    };
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleAdd = this.handleAdd.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.clearInputs = this.clearInputs.bind(this);
+function Fieldset(props) {
+  const { legend, inputs, dataSaved, saveData, deleteData } = props;
+
+  function createEmptyValues() {
+    const values = inputs.reduce((obj, input) => {
+      // eslint-disable-next-line no-param-reassign
+      obj[input.id] = {
+        value: '',
+        label: '',
+      };
+      return obj;
+    }, {});
+    return values;
   }
 
-  handleDelete(event) {
-    const { deleteData, legend } = this.props;
-    deleteData(legend, event.target.parentNode.children[0].id);
+  const [values, setValues] = useState(createEmptyValues());
+
+  function isValid() {
+    return !inputs.some((input) => input.required && !values[input.id].value);
   }
 
-  handleAdd() {
-    if (this.isValid()) {
-      const { saveData, legend, inputs } = this.props;
-      const { values } = this.state;
+  function clearInputs() {
+    setValues(createEmptyValues());
+  }
+
+  function handleAdd() {
+    if (isValid()) {
       const data = Object.entries(values).reduce(
         (obj, [currentId, currentInput]) => {
           if (currentInput.value)
@@ -40,93 +46,70 @@ class Fieldset extends Component {
         {}
       );
       saveData(legend, data, uniqid());
-      this.clearInputs();
+      clearInputs();
     }
   }
 
-  handleInputChange(event) {
-    this.setState((prevState) => ({
-      values: {
-        ...prevState.values,
-        [event.target.id]: {
-          label: event.target.parentNode.innerText,
-          value: event.target.value,
-        },
+  function handleInputChange(event) {
+    setValues({
+      ...values,
+      [event.target.id]: {
+        label: event.target.parentNode.innerText,
+        value: event.target.value,
       },
-    }));
-  }
-
-  clearInputs() {
-    this.setState({
-      values: this.createEmptyValues(),
     });
   }
 
-  createEmptyValues() {
-    const { inputs } = this.props;
-    const values = inputs.reduce((obj, input) => {
-      // eslint-disable-next-line no-param-reassign
-      obj[input.id] = {
-        value: '',
-        label: '',
-      };
-      return obj;
-    }, {});
-    return values;
-  }
-
-  isValid() {
-    const { inputs } = this.props;
-    const { values } = this.state;
-    return !inputs.some((input) => input.required && !values[input.id].value);
-  }
-
-  render() {
-    const { legend, inputs, dataSaved, saveData } = this.props;
-    const { values } = this.state;
-    let dataDisplay;
-    if (dataSaved)
-      dataDisplay = Object.entries(dataSaved).map(([id, data]) => (
-        <div key={id} className="saved-data">
-          <UserDataDiv
-            id={id}
-            data={data}
-            type={inputs.find((element) => element.label === data.label).type}
-            changeValues={saveData}
-            legend={legend}
-          />
-          <button type="button" onClick={this.handleDelete} className="btn dlt">
-            Delete
-          </button>
-        </div>
-      ));
-    return (
-      <fieldset className={legend}>
-        <legend>{legend}</legend>
-        <p>Click to edit</p>
-        {dataSaved && dataDisplay}
-        {inputs.map((inputProps) => {
-          const InputComponent = inputProps.component;
-          return (
-            <InputComponent
-              type={inputProps.type}
-              labelText={inputProps.labelText}
-              placeholder={`Enter ${inputProps.labelText.toLowerCase()}`}
-              required={inputProps.required}
-              key={inputProps.id}
-              id={inputProps.id}
-              value={values[inputProps.id].value}
-              handleInputChange={this.handleInputChange}
-            />
-          );
-        })}
-        <button type="button" onClick={this.handleAdd} className="btn add">
-          Add
+  function displaySaved() {
+    return Object.entries(dataSaved).map(([id, data]) => (
+      <div key={id} className="saved-data">
+        <UserDataDiv
+          id={id}
+          data={data}
+          type={inputs.find((element) => element.label === data.label).type}
+          changeValues={saveData}
+          legend={legend}
+        />
+        <button
+          type="button"
+          onClick={(event) =>
+            deleteData(legend, event.target.parentNode.children[0].id)
+          }
+          className="btn dlt"
+        >
+          Delete
         </button>
-      </fieldset>
-    );
+      </div>
+    ));
   }
+
+  return (
+    <fieldset className={legend}>
+      <legend>{legend}</legend>
+      <p>Click to edit</p>
+      {displaySaved()}
+      {inputs.map((inputProps) => {
+        const InputComponent = inputProps.component;
+        return (
+          <InputComponent
+            type={inputProps.type}
+            labelText={inputProps.labelText}
+            placeholder={`Enter ${inputProps.labelText.toLowerCase()}`}
+            required={inputProps.required}
+            key={inputProps.id}
+            id={inputProps.id}
+            value={values[inputProps.id].value}
+            handleInputChange={(event) => handleInputChange(event)}
+          />
+        );
+      })}
+      <button type="button" onClick={handleAdd} className="btn add">
+        Add
+      </button>
+    </fieldset>
+  );
 }
+
 Fieldset.propTypes = {
   legend: PropTypes.string.isRequired,
   inputs: PropTypes.arrayOf(
