@@ -8,7 +8,7 @@ import './styles/app.css';
 
 function App(props) {
   const { fieldsets } = props;
-  const [isWorkMode, setIsWorkMode] = useState(false);
+  const [isWorkMode, setIsWorkMode] = useState(true);
   const [dataSaved, setDataSaved] = useState({
     Personal: {
       main: {
